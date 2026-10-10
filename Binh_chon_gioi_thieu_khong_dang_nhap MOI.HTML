@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bình Chọn — 122 Thí Sinh</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; text-align: center; }
+        .gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 20px auto; }
+        .candidate-card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; }
+        .candidate-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; background: #ddd; }
+        .candidate-name { font-weight: bold; margin: 10px 0; font-size: 16px; }
+        
+        /* Nút chức năng */
+        .btn-change { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; width: 100%; margin-top: 5px; }
+        .btn-change:hover { background: #0056b3; }
+        .vote-section { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-vote { background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>🌟 BÌNH CHỌN — 122 THÍ SINH 🌟</h1>
+    <p>✅ Thay đổi ảnh trực tiếp và lưu vĩnh viễn (không mất khi tắt/mở trình duyệt)</p>
+
+    <div class="gallery-container" id="gallery"></div>
+
+    <script>
+        const TOTAL_CANDIDATES = 122;
+        const STORAGE_KEY = 'binh_chon_122_images';
+        const VOTE_KEY = 'binh_chon_122_votes';
+
+        // 1. Khởi tạo hoặc tải dữ liệu ảnh đã lưu từ localStorage
+        let savedImages = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        let savedVotes = JSON.parse(localStorage.getItem(VOTE_KEY)) || {};
+
+        const gallery = document.getElementById('gallery');
+
+        // 2. Tự động sinh giao diện cho 122 thí sinh
+        for (let i = 1; i <= TOTAL_CANDIDATES; i++) {
+            // Nếu chưa có ảnh lưu trữ, sử dụng một ảnh mặc định tạm thời
+            const imgSrc = savedImages[i] || `https://picsum.photos{i}`;
+            const votes = savedVotes[i] || 0;
+
+            const card = document.createElement('div');
+            card.className = 'candidate-card';
+            card.innerHTML = `
+                <img id="img-${i}" src="${imgSrc}" alt="Thí sinh ${i}" loading="lazy">
+                <div class="candidate-name">Thí sinh số ${i}</div>
+                <button class="btn-change" onclick="changeImage(${i})">📸 Đổi ảnh (Nhập link)</button>
+                <div class="vote-section">
+                    <span>Lượt vote: <strong id="vote-${i}">${votes}</strong></span>
+                    <button class="btn-vote" onclick="vote(${i})">👍 Vote</button>
+                </div>
+            `;
+            gallery.appendChild(card);
+        }
+
+        // 3. Hàm đổi ảnh và LƯU VĨNH VIỄN vào localStorage
+        function changeImage(id) {
+            const currentUrl = document.getElementById(`img-${id}`).src;
+            const newUrl = prompt(`Nhập link ảnh online mới cho Thí sinh số ${id}:`, currentUrl);
+            
+            if (newUrl && newUrl.trim() !== "") {
+                // Cập nhật giao diện ngay lập tức
+                document.getElementById(`img-${id}`).src = newUrl;
+                
+                // Lưu vào danh sách dữ liệu
+                savedImages[id] = newUrl;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(savedImages));
+            }
+        }
+
+        // 4. Hàm vote tích hợp sẵn lưu trữ
+        function vote(id) {
+            savedVotes[id] = (savedVotes[id] || 0) + 1;
+            document.getElementById(`vote-${id}`).innerText = savedVotes[id];
+            localStorage.setItem(VOTE_KEY, JSON.stringify(savedVotes));
+        }
+    </script>
+</body>
+</html>
